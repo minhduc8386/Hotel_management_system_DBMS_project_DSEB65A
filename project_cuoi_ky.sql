@@ -1,7 +1,8 @@
-create database projectck;
-use projectck;
 
--- bảng users
+create database hotel;
+use hotel;
+drop table if exists bookingservices, invoices, payments, services, bookings, rooms, roomtypes, guests, users;
+
 create table users (
     userid int primary key auto_increment,
     username varchar(50) unique,
@@ -10,7 +11,6 @@ create table users (
     fullname varchar(100)
 );
 
--- bảng guests
 create table guests (
     guestid int primary key auto_increment,
     guestname varchar(100),
@@ -18,7 +18,6 @@ create table guests (
     address varchar(255)
 );
 
--- bảng roomtypes
 create table roomtypes (
     typeid int primary key auto_increment,
     typename varchar(50),
@@ -26,7 +25,6 @@ create table roomtypes (
     baseprice decimal(10,2)
 );
 
--- bảng rooms
 create table rooms (
     roomid int primary key auto_increment,
     typeid int,
@@ -35,15 +33,6 @@ create table rooms (
     foreign key (typeid) references roomtypes(typeid)
 );
 
--- bảng services
-create table services (
-    serviceid int primary key auto_increment,
-    servicename enum('rooms service', 'breakfast', 'spa', 'sports & gaming', 'event & party', 'gym & yoga'),
-    description text,
-    price decimal(10,2)
-);
-
--- bảng bookings
 create table bookings (
     bookingid int primary key auto_increment,
     guestid int,
@@ -54,17 +43,13 @@ create table bookings (
     foreign key (roomid) references rooms(roomid)
 );
 
--- bảng bookingservice
-create table bookingservice (
-    bookingid int,
-    serviceid int,
-    quantity int default 1,
-    primary key (bookingid, serviceid),
-    foreign key (bookingid) references bookings(bookingid),
-    foreign key (serviceid) references services(serviceid)
+create table services (
+    serviceid int primary key auto_increment,
+    servicename varchar(100),
+    description text,
+    price decimal(10,2)
 );
 
--- bảng invoices
 create table invoices (
     invoiceid int primary key auto_increment,
     guestid int,
@@ -73,7 +58,6 @@ create table invoices (
     foreign key (guestid) references guests(guestid)
 );
 
--- bảng payments
 create table payments (
     paymentid int primary key auto_increment,
     invoiceid int,
@@ -83,40 +67,74 @@ create table payments (
     foreign key (invoiceid) references invoices(invoiceid)
 );
 
--- dữ liệu mẫu cho users
-insert into users (username, passwordhash, role, fullname) values
-('admin', '12345', 'manager', 'admin user'),
-('reception1', 'abcdef', 'receptionist', 'receptionist one'),
-('account1', 'password', 'accountant', 'accountant one');
+create table bookingservices (
+    bookingid int,
+    serviceid int,
+    quantity int default 1,
+    primary key (bookingid, serviceid),
+    foreign key (bookingid) references bookings(bookingid),
+    foreign key (serviceid) references services(serviceid)
+);
 
--- dữ liệu mẫu cho guests
+insert into users (username, passwordhash, role, fullname) values
+('recept01', 'hashedpass1', 'receptionist', 'receptionist a'),
+('manager01', 'hashedpass2', 'manager', 'manager b'),
+('acct01', 'hashedpass3', 'accountant', 'accountant c');
+
 insert into guests (guestname, phonenumber, address) values
 ('nguyen van a', '0912345678', 'hanoi'),
 ('tran thi b', '0987654321', 'da nang'),
-('le van c', '0977777777', 'ho chi minh'),
-('pham thi d', '0912341234', 'hue'),
-('do van e', '0973123456', 'can tho');
+('le van c', '0909123456', 'ho chi minh'),
+('pham thi d', '0934567890', 'hue'),
+('do van e', '0978123456', 'can tho');
 
--- dữ liệu mẫu cho roomtypes
 insert into roomtypes (typename, description, baseprice) values
-('single', 'single room', 500000),
-('double', 'double bed room', 1000000),
+('single', 'single bed room', 500000),
+('double', 'double bed room', 800000),
 ('suite', 'luxury suite', 1500000);
 
--- dữ liệu mẫu cho rooms
 insert into rooms (typeid, status, price) values
 (1, 'available', 500000),
-(2, 'occupied', 1000000),
-(3, 'maintenance', 1500000);
+(2, 'occupied', 800000),
+(3, 'available', 1500000),
+(1, 'maintenance', 450000),
+(2, 'available', 850000);
 
--- dữ liệu mẫu cho services
 insert into services (servicename, description, price) values
-('rooms service', 'in-room dining', 100000),
-('breakfast', 'buffet breakfast', 80000),
+('laundry', 'wash and fold clothes', 50000),
+('room service', 'in-room dining', 100000),
 ('spa', 'relaxing massage', 300000),
-('sports & gaming', 'entertaining with various sports and games', 100000),
-('event & party', 'participating in exciting events and parties', 150000),
-('gym & yoga', 'training and exercising in the gym', 50000);
+('breakfast', 'buffet breakfast', 80000),
+('airport pickup', 'pick-up by hotel car', 200000);
+
+insert into bookings (guestid, roomid, checkindate, checkoutdate) values
+(1, 1, '2025-05-01', '2025-05-03'),
+(2, 2, '2025-05-01', '2025-05-04'),
+(3, 3, '2025-05-02', '2025-05-05'),
+(4, 5, '2025-05-01', '2025-05-02'),
+(5, 4, '2025-05-03', '2025-05-05');
+
+insert into bookingservices (bookingid, serviceid, quantity) values
+(1, 1, 2),
+(1, 2, 1),
+(2, 3, 1),
+(3, 1, 1),
+(3, 4, 2),
+(4, 5, 1);
+
+insert into invoices (guestid, totalamount, paymentdate) values
+(1, 1100000, '2025-05-03'),
+(2, 2400000, '2025-05-04'),
+(3, 3100000, '2025-05-05'),
+(4, 850000, '2025-05-02'),
+(5, 900000, '2025-05-05');
+
+insert into payments (invoiceid, amountpaid, paymentdate, paymentmethod) values
+(1, 1100000, '2025-05-03', 'cash'),
+(2, 2400000, '2025-05-04', 'credit card'),
+(3, 3100000, '2025-05-05', 'vnpay'),
+(4, 850000, '2025-05-02', 'cash'),
+(5, 900000, '2025-05-05', 'credit card');
 
 create index idx_rooms_status on rooms(status);
 create index idx_bookings_guest on bookings(guestid);
@@ -214,9 +232,5 @@ values ('vo thi x', aes_encrypt('0911222333', 'mykey'), 'bien hoa');
 
 -- và truy vấn khi hiển thị
 select guestname, convert(aes_decrypt(phonenumber, 'mykey') using utf8) as phone, address from guests;
-
-
-
-
 
 
