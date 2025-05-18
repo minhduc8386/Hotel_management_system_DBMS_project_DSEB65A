@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thank You</title>
+</head>
+<body>
+    <h2>Thank You for Booking!</h2>
+    <p>You will be redirected to the homepage shortly.</p>
+
+    <script>
+      setTimeout(function() {
+          window.location.href = "{{ url_for('index') }}";
+      }, 5000);
+    </script>
+</body>
+</html>
