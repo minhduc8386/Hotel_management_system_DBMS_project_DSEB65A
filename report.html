@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Báo cáo hệ thống</title>
+</head>
+<body>
+    <h1>Báo cáo hệ thống</h1>
+
+    <h2>1. Tỷ lệ sử dụng phòng</h2>
+    <p>Tỷ lệ hiện tại: <strong>{{ occupancy['occupancy_rate'] }}</strong></p>
+
+    <h2>2. Doanh thu theo tháng</h2>
+    <table border="1">
+        <tr>
+            <th>Tháng</th>
+            <th>Doanh thu</th>
+        </tr>
+        {% for r in revenue %}
+        <tr>
+            <td>{{ r.month }}</td>
+            <td>{{ r.total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>3. Lịch sử khách hàng</h2>
+    <table border="1">
+        <tr>
+            <th>Tên khách</th>
+            <th>Số lần ở</th>
+            <th>Lần đầu</th>
+            <th>Lần gần nhất</th>
+            <th>Tổng chi tiêu</th>
+        </tr>
+        {% for g in guests %}
+        <tr>
+            <td>{{ g.guestname }}</td>
+            <td>{{ g.times_visited }}</td>
+            <td>{{ g.first_visit }}</td>
+            <td>{{ g.last_visit }}</td>
+            <td>{{ g.total_spent or 0 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p><a href="{{ url_for('index') }}">← Quay lại trang chính</a></p>
+</body>
+</html>
